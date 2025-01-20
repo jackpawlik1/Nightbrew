@@ -63,7 +63,7 @@ gen-gtk4:
     echo "GTK4 files copied to {{cwd}}/refs/gtk-4.0"
 gen-hypr:
     echo "Copying Hyprland files from wallbash to your theme in ./refs"
-    cp $HOME/.config/hypr/themes/colors.conf {{cwd}}/refs/hypr.theme
+    cp $HOME/.config/hypr/themes/theme.conf {{cwd}}/refs/hypr.theme
     echo '$HOME/.config/hypr/themes/theme.conf|> $HOME/.config/hypr/themes/colors.conf' | cat - {{cwd}}/refs/hypr.theme > temp && mv temp {{cwd}}/refs/hypr.theme
     echo "Hyprland wallbash theme copied to {{cwd}}/refs/hypr.theme"
 gen-waybar:
