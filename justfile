@@ -1,13 +1,8 @@
 cwd := `pwd`
-theme := "MyTheme" # default theme
+theme := "MyTheme"
 
 init:
     #!/usr/bin/env bash
-    # if theme is not set, prompt for theme name
-    if [ -z {{theme}} ]; then
-        echo "Theme is not set, please set a theme name in the justfile"
-        exit 1
-    fi
     
     # Create main theme directory
     mkdir -p "Configs/.config/hyde/themes/$theme/wallpapers"
@@ -22,15 +17,41 @@ init:
     echo "- Configs/.config/hyde/themes/$theme/wallpapers"
     echo "- Source/arcs"
     echo "- screenshots"
-
 install:
-    # delete existing theme
+    #!/usr/bin/env bash
+    # Check if any files with these prefixes exist
+    if find refs -name "GTK_*.arc" -o -name "ICON_*.arc" -o -name "CURSOR_*.arc" -o -name "FONT_*.arc" | grep -q .; then
+        echo "Warning: Found arc in refs folder with GTK_, ICON_, CURSOR_, or FONT_ prefixes"
+        echo "These prefixes must be removed for the install script to work correctly"
+        echo "Would you like to automatically remove these prefixes? (y/N): "
+        read -r response
+        if [[ ! "$response" =~ ^[Yy]$ ]]; then
+            echo "Operation cancelled. Please remove prefixes manually if needed."
+            exit 1
+        fi
+        find refs -name "*.arc" -exec sh -c 'for file; do mv "$file" "${file#GTK_}"; done' sh {} +
+        find refs -name "*.arc" -exec sh -c 'for file; do mv "$file" "${file#ICON_}"; done' sh {} +
+        find refs -name "*.arc" -exec sh -c 'for file; do mv "$file" "${file#CURSOR_}"; done' sh {} +
+        find refs -name "*.arc" -exec sh -c 'for file; do mv "$file" "${file#FONT_}"; done' sh {} +
+    fi
+
     rm -rf ~/.config/hyde/themes/{{theme}}
-    # Run the Hyde theme import command with the current working directory
     env FORCE_THEME_UPDATE=true Hyde theme import "{{theme}}" "{{cwd}}"
     # BUG: sometimes when imported locally, Configs folder is not copied over
     mkdir -p ~/.config/hyde/themes/{{theme}}
     cp -r Configs/.config/hyde/themes/{{theme}}/. ~/.config/hyde/themes/{{theme}}/.
+copy-theme:
+    #!/usr/bin/env bash
+    just reset
+    just init
+    selected_theme=$(ls ~/.config/hyde/themes | fzf)
+    if [ -z "$selected_theme" ]; then
+        echo "No theme selected"
+        exit 1
+    fi
+    cp -r ~/.config/hyde/themes/"$selected_theme"/. {{cwd}}/Configs/.config/hyde/themes/{{theme}}/.
+    echo "Copied theme '$selected_theme' to '{{cwd}}'"
+    echo "Note this did not copy Source/arcs, this will have to be done manually"
 gen-dcol:
     echo "Copying main dcol from current wallpaper to ./refs"
     cp $HOME/.cache/hyde/wall.dcol {{cwd}}/refs/theme.dcol
@@ -78,7 +99,7 @@ gen-all:
     just gen-kitty
 
 reset:
-    # prompt for confirmation
+    #!/usr/bin/env bash
     read -p "Are you sure you want to reset the theme structure? This will delete all your current theme files. (y/n): " confirm
     if [ "$confirm" != "y" ]; then
         echo "Reset cancelled"
@@ -88,6 +109,4 @@ reset:
     rm -rf ./Configs
     rm -rf ./Source
     rm -rf ./screenshots
-
-    echo "Theme structure reset, `just init` to reinitialize"
-
+    rm -rf ./refs
