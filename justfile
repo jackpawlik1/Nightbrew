@@ -9,22 +9,6 @@ init:
     mkdir -p "refs"
 install:
     #!/usr/bin/env bash
-    # Check if any files with these prefixes exist
-    if find refs -name "GTK_*.arc" -o -name "ICON_*.arc" -o -name "CURSOR_*.arc" -o -name "FONT_*.arc" | grep -q .; then
-        echo "Warning: Found arc in refs folder with GTK_, ICON_, CURSOR_, or FONT_ prefixes"
-        echo "These prefixes must be removed for the install script to work correctly"
-        echo "Would you like to automatically remove these prefixes? (y/N): "
-        read -r response
-        if [[ ! "$response" =~ ^[Yy]$ ]]; then
-            echo "Operation cancelled. Please remove prefixes manually if needed."
-            exit 1
-        fi
-        find refs -name "*.arc" -exec sh -c 'for file; do mv "$file" "${file#GTK_}"; done' sh {} +
-        find refs -name "*.arc" -exec sh -c 'for file; do mv "$file" "${file#ICON_}"; done' sh {} +
-        find refs -name "*.arc" -exec sh -c 'for file; do mv "$file" "${file#CURSOR_}"; done' sh {} +
-        find refs -name "*.arc" -exec sh -c 'for file; do mv "$file" "${file#FONT_}"; done' sh {} +
-    fi
-
     rm -rf ~/.config/hyde/themes/{{theme}}
     env FORCE_THEME_UPDATE=true Hyde theme import "{{theme}}" "{{cwd}}"
     # BUG: sometimes when imported locally, Configs folder is not copied over
