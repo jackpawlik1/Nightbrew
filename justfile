@@ -27,21 +27,21 @@ copy-theme:
     echo "Note this did not copy Source/arcs, this will have to be done manually"
 gen-dcol:
     #!/usr/bin/env bash
+    mkdir -p {{cwd}}/refs
     cp $HOME/.cache/hyde/wall.dcol {{cwd}}/refs/theme.dcol
-gen-gtk4:
-    #!/usr/bin/env bash
-    mkdir -p {{cwd}}/refs/gtk-4.0
-    cp $HOME/.themes/Wallbash-Gtk/gtk-4.0/*.css {{cwd}}/refs/gtk-4.0/
 gen-hypr:
     #!/usr/bin/env bash
+    mkdir -p {{cwd}}/refs
     cp $HOME/.config/hypr/themes/theme.conf {{cwd}}/refs/hypr.theme
     echo '$HOME/.config/hypr/themes/theme.conf|> $HOME/.config/hypr/themes/colors.conf' | cat - {{cwd}}/refs/hypr.theme > temp && mv temp {{cwd}}/refs/hypr.theme
 gen-waybar:
     #!/usr/bin/env bash
+    mkdir -p {{cwd}}/refs
     cp $HOME/.config/waybar/theme.css {{cwd}}/refs/waybar.theme
     echo '$HOME/.config/waybar/theme.css|${scrDir}/wbarconfgen.sh' | cat - {{cwd}}/refs/waybar.theme > temp && mv temp {{cwd}}/refs/waybar.theme
 gen-rofi:
     #!/usr/bin/env bash
+    mkdir -p {{cwd}}/refs
     cp $HOME/.config/rofi/theme.rasi {{cwd}}/refs/rofi.theme
     echo '$HOME/.config/rofi/theme.rasi' | cat - {{cwd}}/refs/rofi.theme > temp && mv temp {{cwd}}/refs/rofi.theme
 gen-kvantum:
@@ -53,17 +53,20 @@ gen-kvantum:
     echo '$HOME/.config/Kvantum/wallbash/wallbash.kvconfig' | cat - {{cwd}}/refs/kvantum/kvconfig.theme > temp && mv temp {{cwd}}/refs/kvantum/kvconfig.theme
 gen-kitty:
     #!/usr/bin/env bash
+    mkdir -p {{cwd}}/refs
     cp $HOME/.config/kitty/theme.conf {{cwd}}/refs/kitty.theme
     echo '$HOME/.config/kitty/theme.conf|killall -SIGUSR1 kitty' | cat - {{cwd}}/refs/kitty.theme > temp && mv temp {{cwd}}/refs/kitty.theme
+gen-gtk4:
+    #!/usr/bin/env bash
+    mkdir -p {{cwd}}/refs/gtk-4.0
+    cp $HOME/.themes/Wallbash-Gtk/gtk-4.0/*.css {{cwd}}/refs/gtk-4.0/
 gen-all:
     just gen-dcol
-    just gen-gtk4
     just gen-hypr
     just gen-waybar
     just gen-rofi
     just gen-kvantum
     just gen-kitty
-
 set-wall:
     #!/usr/bin/env bash
     selected_wallpaper=$(ls {{cwd}}/Configs/.config/hyde/themes/{{theme}}/wallpapers | fzf)
