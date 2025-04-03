@@ -21,10 +21,10 @@ This is not a standalone theme, it needs [HyDE](https://github.com/prasanthranga
 
 > ## Installation
 
-`Hyde theme import "Nightbrew" https://github.com/jackpawlik1/Nightbrew`
+```Hyde theme import "Nightbrew" https://github.com/jackpawlik1/Nightbrew```
 
 or
 
-`Hyde theme import`
+```Hyde theme import```
 
 and choose 'Nightbrew' from the list.
